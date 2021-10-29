@@ -48,27 +48,26 @@ uint8_t Turn2=0;
 uint8_t PIDFLAG=0;
 
 
-float Kp=5,Kd=0,Ki=1;
-float KpPos = 1;
-float Iterm=0;
-float Pterm=0;
-float IntError=0;
-float pos = 0;
+float Kp=5, Kd=0, Ki=1;
+float KpPosition = 1;
+float Iterm = 0;
+float Pterm = 0;
+float IntError = 0;
 
-float ControllerOut=0;
+float ControllerOut = 0;
 float posControllerOut = 0;
 
-float MyError=0;
+float MyError = 0;
 float posErr = 0;
-float Speed=0;
-float PreSpeed=0;
-//float SetPoint=200;
-float posSetpoint =650;
-int cnt=0;
+float Speed = 0;
+float PreSpeed = 0;
+//float SetPoint = 200;
+float posSetpoint = 650;
+int cnt = 0;
 
 
-uint16_t Pulse=0;
-uint16_t PPulse=0;
+uint16_t Pulse = 0;
+uint16_t PPulse = 0;
 
 
 
@@ -156,44 +155,44 @@ void PIDCalc()
 	posErr= posSetpoint - Pulse;
 	
 	
-	posControllerOut = KpPos * posErr;
+	posControllerOut = KpPosition * posErr;
 	Speed=1300*Turn1-1300*Turn2+Pulse-PPulse;
 	PPulse=Pulse;
 	Turn1=0;
 	Turn2=0;
 	
 	MyError = posControllerOut-Speed;
-//		if( posControllerOut< 0)
+//	if( posControllerOut< 0)
 //	{
-//			HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_11);
-//			HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_12);
-//			posControllerOut=-posControllerOut;
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_11);
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_12);
+//		posControllerOut=-posControllerOut;
 //	}
-	IntError+=MyError;
+	IntError += MyError;
 	if(IntError>3600)
 	{
-		IntError=3600;
+		IntError = 3600;
 	}
 	if(IntError<-3600)
 	{
-			IntError=-3600;
+		IntError =- 3600;
 	}
-	Pterm=Kp*MyError;
-	Iterm=Ki*IntError;
+	Pterm = Kp * MyError;
+	Iterm= Ki * IntError;
 	
-	ControllerOut=Iterm+Pterm;
+	ControllerOut = Iterm + Pterm;
 	
-	if(ControllerOut<-7200)
-		ControllerOut=-7200;
+	if(ControllerOut < -7200)
+		ControllerOut = -7200;
 	
-	if(ControllerOut>7200)
-		ControllerOut=7200;
+	if(ControllerOut > 7200)
+		ControllerOut = 7200;
 	
-		if( ControllerOut< 0)
+	if(ControllerOut < 0)
 	{
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, GPIO_PIN_RESET);
-			__HAL_TIM_SetCompare(&htim1,TIM_CHANNEL_1,-ControllerOut);
+		__HAL_TIM_SetCompare(&htim1,TIM_CHANNEL_1,-ControllerOut);
 	}
 	else
 	{
@@ -211,21 +210,22 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if(htim->Instance==TIM1)
 	{
-		cnt = cnt+1;
-		if(cnt == 100){
+		cnt++;
+		if(cnt == 100)
+		{
 			PIDCalc();
 			cnt = 0;
 		}
 	}
-	if(htim->Instance==TIM2)
+	if(htim->Instance == TIM2)
 	{
 		if (__HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2))
 		{
-			Turn2=1;
+			Turn2 = 1;
 		}
 		else
 		{
-			Turn1=1;
+			Turn1 = 1;
 		}
 }
 	
@@ -353,7 +353,6 @@ static void MX_TIM2_Init(void)
 
   TIM_Encoder_InitTypeDef sConfig;
   TIM_MasterConfigTypeDef sMasterConfig;
-
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
